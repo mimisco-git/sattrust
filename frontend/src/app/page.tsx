@@ -1,144 +1,103 @@
+'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useChainStats } from '../hooks/useContractRead';
 
-const STATS = [
-  { label: 'Total Value Locked', value: '12.4 BTC', sub: 'across all deals' },
-  { label: 'Deals Completed', value: '847', sub: 'on Bitcoin L1' },
-  { label: 'Wallets Tracked', value: '2,341', sub: 'with SatScores' },
-  { label: 'Avg SatScore', value: '412', sub: 'out of 1000' },
+const features = [
+  { icon: '⚡', title: 'Split Payments', desc: 'Lock real BTC and define up to 10 recipients with custom percentage splits. One transaction distributes to everyone.', color: '#f7931a' },
+  { icon: '🏆', title: 'SatScore Reputation', desc: 'Every completed deal builds your 0–1000 on-chain reputation score. No forms. No profiles. Just Bitcoin.', color: '#00d4ff' },
+  { icon: '🔒', title: 'Trustless Escrow', desc: 'Funds locked until release. Dispute protection built in. No intermediaries. No custodians. Just smart contracts.', color: '#00ff88' },
 ];
 
-const FEATURES = [
-  {
-    icon: '💸',
-    title: 'Split Payments',
-    color: '#f7931a',
-    desc: 'Lock real BTC and define up to 10 recipients with custom percentage splits. One transaction distributes to everyone.',
-  },
-  {
-    icon: '🏅',
-    title: 'SatScore Reputation',
-    color: '#00d4ff',
-    desc: 'Every completed deal builds your 0–1000 on-chain reputation score. No forms. No profiles. Just Bitcoin.',
-  },
-  {
-    icon: '🔐',
-    title: 'Trustless Escrow',
-    color: '#f5c842',
-    desc: 'Funds locked until release. Dispute protection built in. No intermediaries. No custodians. Just smart contracts.',
-  },
+const steps = [
+  { n: '01', title: 'Lock BTC', desc: "Create a deal, define recipient splits and deadline. Your BTC locks into the SplitDeal contract." },
+  { n: '02', title: 'Work Happens', desc: "Team delivers. You review. When satisfied, release with one click — funds flow instantly." },
+  { n: '03', title: 'Score Builds', desc: "Every completed deal writes permanently to the ReputationRegistry on Bitcoin L1. SatScores update automatically for everyone." },
 ];
 
-export default function Home() {
+export default function HomePage() {
+  const { stats, loading } = useChainStats();
+
   return (
-    <div style={{ position: 'relative' }}>
-
-      {/* Ambient glow orbs */}
-      <div className="glow-orb-bitcoin" style={{ top: -100, left: -200 }} />
-      <div className="glow-orb-cyan" style={{ top: 200, right: -150 }} />
-
-      {/* ── HERO ─────────────────────────────────────── */}
-      <section style={{ textAlign: 'center', padding: '60px 0 80px', position: 'relative' }}>
-
-        {/* Top badge */}
+    <div style={{ minHeight: '100vh' }}>
+      {/* Hero */}
+      <section style={{ padding: '80px 16px 60px', textAlign: 'center', maxWidth: 900, margin: '0 auto' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderRadius: 20, background: 'rgba(247,147,26,0.08)', border: '1px solid rgba(247,147,26,0.2)', marginBottom: 32 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f7931a', display: 'inline-block', animation: 'glowPulse 2s infinite' }} />
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#f7931a', letterSpacing: '0.08em' }}>
-            OP_NET VIBECODING CHALLENGE 2026
-          </span>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f7931a', display: 'inline-block' }} />
+          <span style={{ fontSize: 11, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}>OP_NET VIBECODING CHALLENGE 2026</span>
         </div>
-
-        {/* Headline */}
-        <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 'clamp(2.8rem, 6vw, 5rem)', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24 }}>
-          Pay your team in Bitcoin.<br />
-          <span className="text-gradient-bitcoin">Build trust on-chain.</span>
+        <h1 className="font-display" style={{ fontSize: 'clamp(36px, 7vw, 80px)', fontWeight: 800, lineHeight: 1.05, color: '#fff', marginBottom: 16 }}>
+          Pay your team in Bitcoin.<br/>
+          <span style={{ background: 'linear-gradient(135deg, #f7931a, #ffaa44)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Build trust on-chain.</span>
         </h1>
-
-        {/* Sub */}
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 18, lineHeight: 1.7, maxWidth: 540, margin: '0 auto 40px', fontWeight: 300 }}>
-          SatTrust splits BTC payments across any team in one transaction — 
-          and every deal builds a permanent, verifiable reputation score on Bitcoin Layer 1.
+        <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', maxWidth: 600, margin: '0 auto 40px', lineHeight: 1.6 }}>
+          SatTrust splits BTC payments across any team in one transaction — and every deal builds a permanent, verifiable reputation score on Bitcoin Layer 1.
         </p>
-
-        {/* CTAs */}
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/create" className="btn-bitcoin" style={{ padding: '14px 28px', fontSize: 15 }}>
-            ⚡ Create a Deal
-          </Link>
-          <Link href="/leaderboard" className="btn-ghost" style={{ padding: '14px 24px', fontSize: 15 }}>
-            🏆 View Leaderboard
-          </Link>
-          <Link href="/profile" className="btn-ghost" style={{ padding: '14px 24px', fontSize: 15 }}>
-            👤 My Profile
-          </Link>
+          <Link href="/create" className="btn-bitcoin" style={{ padding: '14px 28px', fontSize: 16 }}>⚡ Create a Deal</Link>
+          <Link href="/leaderboard" className="btn-ghost" style={{ padding: '14px 28px', fontSize: 16 }}>🏆 View Leaderboard</Link>
+          <Link href="/profile" className="btn-ghost" style={{ padding: '14px 28px', fontSize: 16 }}>👤 My Profile</Link>
         </div>
-
-        {/* Powered by */}
         <div style={{ marginTop: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>POWERED BY</div>
-          <div className="badge-bitcoin" style={{ fontSize: 10 }}>OP_NET</div>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>BITCOIN LAYER 1</div>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>POWERED BY</span>
+          <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#f7931a', padding: '2px 8px', borderRadius: 4, background: 'rgba(247,147,26,0.1)', border: '1px solid rgba(247,147,26,0.2)' }}>OP_NET</span>
+          <span style={{ fontSize: 11, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>BITCOIN LAYER 1</span>
         </div>
       </section>
 
-      {/* ── STATS BAR ────────────────────────────────── */}
-      <div className="card-glass" style={{ padding: '32px 40px', marginBottom: 60, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 32 }}>
-        {STATS.map((s, i) => (
-          <div key={i} style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 28, letterSpacing: '-0.03em', color: i % 2 === 0 ? '#f7931a' : '#00d4ff' }}>{s.value}</div>
-            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 4, letterSpacing: '0.04em' }}>{s.label.toUpperCase()}</div>
+      {/* Live Stats */}
+      <div className="card-glass" style={{ padding: '32px 40px', marginBottom: 60, maxWidth: 1000, margin: '0 auto 60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 32, textAlign: 'center' }}>
+        {[
+          { label: 'TOTAL VALUE LOCKED', value: loading ? '...' : `${stats.tvl} BTC`, color: '#f7931a' },
+          { label: 'DEALS COMPLETED', value: loading ? '...' : stats.deals.toLocaleString(), color: '#00d4ff' },
+          { label: 'WALLETS TRACKED', value: loading ? '...' : stats.wallets.toLocaleString(), color: '#00ff88' },
+          { label: 'AVG SATSCORE', value: loading ? '...' : stats.avgScore.toString(), color: '#f5c842' },
+        ].map(s => (
+          <div key={s.label}>
+            <div className="font-display font-bold" style={{ fontSize: 32, color: s.color, marginBottom: 4 }}>{s.value}</div>
+            <div style={{ fontSize: 10, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* ── FEATURES ─────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 60 }}>
-        {FEATURES.map((f, i) => (
-          <div key={i} className="card-premium" style={{ padding: 28 }}>
-            <div style={{ width: 48, height: 48, borderRadius: 12, background: `${f.color}15`, border: `1px solid ${f.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 20 }}>
-              {f.icon}
-            </div>
-            <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 17, marginBottom: 10, color: 'white' }}>{f.title}</div>
-            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7 }}>{f.desc}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── HOW IT WORKS ─────────────────────────────── */}
-      <div className="card-glass" style={{ padding: '40px 48px', marginBottom: 60 }}>
-        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#f7931a', letterSpacing: '0.1em', marginBottom: 8 }}>PROTOCOL</div>
-        <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 24, marginBottom: 32 }}>How SatTrust works</div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32 }}>
-          {[
-            { n: '01', title: 'Lock BTC', desc: 'Create a deal, define recipient splits and deadline. Your BTC locks into the SplitDeal contract.' },
-            { n: '02', title: 'Work Happens', desc: 'Team delivers. You review. When satisfied, release with one click — funds flow instantly.' },
-            { n: '03', title: 'Score Builds', desc: 'Every completed deal writes permanently to the ReputationRegistry on Bitcoin L1. SatScores update automatically for everyone.' },
-          ].map(step => (
-            <div key={step.n} style={{ display: 'flex', gap: 16 }}>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 36, color: 'rgba(247,147,26,0.15)', lineHeight: 1, flexShrink: 0, letterSpacing: '-0.04em' }}>{step.n}</div>
-              <div>
-                <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 15, marginBottom: 8 }}>{step.title}</div>
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, lineHeight: 1.7 }}>{step.desc}</div>
-              </div>
+      {/* Features */}
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 60 }}>
+          {features.map(f => (
+            <div key={f.title} className="card-glass" style={{ padding: 28 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: `${f.color}15`, border: `1px solid ${f.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, marginBottom: 20 }}>{f.icon}</div>
+              <h3 className="font-display font-bold text-white" style={{ fontSize: 18, marginBottom: 10 }}>{f.title}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* ── CTA BANNER ───────────────────────────────── */}
-      <div style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', padding: '48px 40px', background: 'linear-gradient(135deg, rgba(247,147,26,0.12) 0%, rgba(0,212,255,0.08) 100%)', border: '1px solid rgba(247,147,26,0.2)', textAlign: 'center' }}>
-        <div className="glow-orb-bitcoin" style={{ top: -100, left: '30%', width: 300, height: 300 }} />
-        <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 28, marginBottom: 12, letterSpacing: '-0.03em' }}>
-          Mainnet goes live <span className="text-gradient-bitcoin">March 17</span>
+        {/* How it works */}
+        <div className="card-glass" style={{ padding: '40px 32px', marginBottom: 60 }}>
+          <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#f7931a', fontFamily: 'monospace', marginBottom: 8 }}>PROTOCOL</div>
+          <h2 className="font-display font-bold text-white" style={{ fontSize: 28, marginBottom: 32 }}>How SatTrust works</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 32 }}>
+            {steps.map(step => (
+              <div key={step.n} style={{ display: 'flex', gap: 16 }}>
+                <div className="font-display" style={{ fontWeight: 800, fontSize: 36, color: 'rgba(247,147,26,0.15)', lineHeight: 1, flexShrink: 0 }}>{step.n}</div>
+                <div>
+                  <h4 className="font-display font-bold text-white" style={{ fontSize: 16, marginBottom: 8 }}>{step.title}</h4>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, lineHeight: 1.6 }}>{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, marginBottom: 28 }}>
-          Everything you build on testnet deploys for real. Start building your reputation now.
-        </div>
-        <Link href="/create" className="btn-bitcoin" style={{ padding: '14px 32px', fontSize: 15 }}>
-          ⚡ Start Building
-        </Link>
-      </div>
 
+        {/* CTA */}
+        <div style={{ borderRadius: 20, overflow: 'hidden', padding: '48px 40px', background: 'linear-gradient(135deg, rgba(247,147,26,0.12) 0%, rgba(0,212,255,0.08) 100%)', border: '1px solid rgba(247,147,26,0.2)', textAlign: 'center', marginBottom: 60 }}>
+          <h2 className="font-display font-bold text-white" style={{ fontSize: 'clamp(24px, 4vw, 36px)', marginBottom: 12 }}>
+            Mainnet goes live <span style={{ color: '#f7931a' }}>March 17</span>
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: 28 }}>Everything you build on testnet deploys for real. Start building your reputation now.</p>
+          <Link href="/create" className="btn-bitcoin" style={{ padding: '14px 32px', fontSize: 16 }}>⚡ Start Building</Link>
+        </div>
+      </div>
     </div>
   );
 }
