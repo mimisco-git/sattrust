@@ -1,107 +1,153 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import { DEMO_WALLETS, computeSatScore, formatSats, formatAddress, LEVEL_COLORS, LEVEL_ICONS } from '../../lib/sattrust';
+import { useState, useEffect } from 'react';
+import { useWalletConnect } from '@btc-vision/walletconnect';
+import { fetchSatScore, CONTRACTS } from '../../hooks/useContractRead';
+import { formatAddress } from '../../lib/sattrust';
+
+const LEVEL_COLORS: Record<string, string> = {
+  New: '#888', Bronze: '#cd7f32', Silver: '#c0c0c0', Gold: '#f5c842', Platinum: '#00d4ff', Diamond: '#a855f7'
+};
+
+function getLevel(score: number) {
+  if (score >= 900) return 'Diamond';
+  if (score >= 750) return 'Platinum';
+  if (score >= 500) return 'Gold';
+  if (score >= 300) return 'Silver';
+  if (score >= 100) return 'Bronze';
+  return 'New';
+}
+
+interface Entry { address: string; score: number; }
 
 export default function LeaderboardPage() {
-  const ranked = [...DEMO_WALLETS].map(w => ({ ...w, breakdown: computeSatScore(w.stats) })).sort((a, b) => b.breakdown.score - a.breakdown.score);
-  const RANK_STYLES = [
-    { color: '#f5c842', bg: 'rgba(245,200,66,0.1)', border: 'rgba(245,200,66,0.25)', icon: '🥇' },
-    { color: 'rgba(255,255,255,0.6)', bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.15)', icon: '🥈' },
-    { color: '#cd7f32', bg: 'rgba(205,127,50,0.1)', border: 'rgba(205,127,50,0.25)', icon: '🥉' },
-  ];
+  const { walletAddress } = useWalletConnect();
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [customAddr, setCustomAddr] = useState('');
+
+  useEffect(() => {
+    // Start with connected wallet if available
+    const initial: Entry[] = [];
+    if (walletAddress) {
+      setLoading(true);
+      fetchSatScore(walletAddress).then(score => {
+        setEntries([{ address: walletAddress, score }]);
+        setLoading(false);
+      });
+    } else {
+      setLoading(false);
+    }
+  }, [walletAddress]);
+
+  const addAddress = async () => {
+    if (!customAddr || entries.find(e => e.address === customAddr)) return;
+    const score = await fetchSatScore(customAddr);
+    setEntries(prev => [...prev, { address: customAddr, score }].sort((a, b) => b.score - a.score));
+    setCustomAddr('');
+  };
+
+  const sorted = [...entries].sort((a, b) => b.score - a.score);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <div className="glow-orb-bitcoin" style={{ top: -100, right: 0 }} />
-
+    <div style={{ minHeight: '100vh', padding: '40px 16px', maxWidth: 900, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#f7931a', letterSpacing: '0.1em', marginBottom: 8 }}>RANKINGS</div>
-        <h1 style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 40, letterSpacing: '-0.04em', marginBottom: 8 }}>
-          <span className="text-gradient-bitcoin">Leaderboard</span>
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15 }}>Top Bitcoin wallets by SatScore — earned through real on-chain deal activity.</p>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#f7931a', fontFamily: 'monospace', marginBottom: 8 }}>RANKINGS</div>
+        <h1 className="font-display font-bold text-white" style={{ fontSize: 'clamp(28px, 5vw, 48px)', marginBottom: 8 }}>Leaderboard</h1>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Top Bitcoin wallets by SatScore — earned through real on-chain deal activity.</p>
       </div>
 
-      {/* Top 3 podium */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, marginBottom: 32 }}>
-        {ranked.slice(0, 3).map((w, i) => {
-          const rs = RANK_STYLES[i];
-          return (
-            <div key={w.address} className="card-premium" style={{ padding: 24, border: `1px solid ${rs.border}`, background: rs.bg, textAlign: 'center' }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>{rs.icon}</div>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{w.label}</div>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.25)', marginBottom: 16 }}>{formatAddress(w.address)}</div>
-              <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 36, color: rs.color, letterSpacing: '-0.04em' }}>{w.breakdown.score}</div>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em', marginBottom: 12 }}>SATSCORE</div>
-              <div className="score-track">
-                <div className="score-fill" style={{ width: `${w.breakdown.score / 10}%` }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, gap: 8 }}>
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16 }}>{w.stats.dealsCompleted}</div>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>DEALS</div>
-                </div>
-                <div style={{ width: 1, background: 'rgba(255,255,255,0.06)' }} />
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: '#f7931a' }}>{formatSats(w.stats.totalReceived)}</div>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>RECEIVED</div>
-                </div>
-                <div style={{ width: 1, background: 'rgba(255,255,255,0.06)' }} />
-                <div style={{ textAlign: 'center', flex: 1 }}>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16, color: w.stats.disputes === 0 ? '#00ff88' : '#ff3366' }}>{w.stats.disputes}</div>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'rgba(255,255,255,0.25)' }}>DISPUTES</div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      {/* Add wallet to lookup */}
+      <div className="card-glass" style={{ padding: 20, marginBottom: 32 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Look up any wallet's SatScore</div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <input
+            className="input-premium"
+            style={{ flex: 1, fontSize: 13 }}
+            placeholder="Enter wallet address (opt1...)"
+            value={customAddr}
+            onChange={e => setCustomAddr(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addAddress()}
+          />
+          <button className="btn-bitcoin" style={{ padding: '0 20px', whiteSpace: 'nowrap' }} onClick={addAddress}>
+            Add
+          </button>
+        </div>
       </div>
 
-      {/* Full table */}
-      <div className="card-glass" style={{ overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              {['Rank', 'Wallet', 'Level', 'SatScore', 'Deals', 'BTC Received', 'Disputes'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '16px', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.08em', fontWeight: 500 }}>{h.toUpperCase()}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ranked.map((w, i) => (
-              <tr key={w.address} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'background 0.15s' }}>
-                <td style={{ padding: '16px', fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 18, color: i === 0 ? '#f5c842' : i === 1 ? 'rgba(255,255,255,0.5)' : i === 2 ? '#cd7f32' : 'rgba(255,255,255,0.2)' }}>
-                  {i < 3 ? RANK_STYLES[i].icon : `#${i + 1}`}
-                </td>
-                <td style={{ padding: '16px' }}>
-                  <a href={`/profile?address=${w.address}`} style={{ fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 14, color: '#00d4ff', textDecoration: 'none' }}>{w.label}</a>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 2 }}>{formatAddress(w.address)}</div>
-                </td>
-                <td style={{ padding: '16px' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: 20, fontSize: 11, fontFamily: 'JetBrains Mono, monospace', background: `${LEVEL_COLORS[w.breakdown.level]}15`, border: `1px solid ${LEVEL_COLORS[w.breakdown.level]}30`, color: LEVEL_COLORS[w.breakdown.level] }}>
-                    {LEVEL_ICONS[w.breakdown.level]} {w.breakdown.level}
-                  </span>
-                </td>
-                <td style={{ padding: '16px' }}>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 20, color: LEVEL_COLORS[w.breakdown.level], letterSpacing: '-0.02em' }}>{w.breakdown.score}</div>
-                  <div style={{ width: 60, marginTop: 4 }}>
-                    <div className="score-track"><div className="score-fill" style={{ width: `${w.breakdown.score / 10}%` }} /></div>
+      {/* Leaderboard Table */}
+      {loading ? (
+        <div className="card-glass text-center" style={{ padding: 60 }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+          <p style={{ color: 'rgba(255,255,255,0.4)' }}>Loading scores from testnet...</p>
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="card-glass text-center" style={{ padding: 60 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🏆</div>
+          <h2 className="font-display font-bold text-white" style={{ fontSize: 22, marginBottom: 8 }}>No wallets yet</h2>
+          <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>Connect your wallet or add an address above to see real SatScores from testnet</p>
+        </div>
+      ) : (
+        <div className="card-glass" style={{ overflow: 'hidden' }}>
+          {/* Table Header */}
+          <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr 100px 80px 100px', gap: 16, padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: 10, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
+            <div>RANK</div>
+            <div>WALLET</div>
+            <div>LEVEL</div>
+            <div style={{ textAlign: 'right' }}>SCORE</div>
+            <div style={{ textAlign: 'right' }}>BAR</div>
+          </div>
+
+          {sorted.map((entry, i) => {
+            const level = getLevel(entry.score);
+            const color = LEVEL_COLORS[level];
+            const isMe = entry.address === walletAddress;
+            const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+
+            return (
+              <div key={entry.address} style={{
+                display: 'grid',
+                gridTemplateColumns: '48px 1fr 100px 80px 100px',
+                gap: 16,
+                padding: '16px 20px',
+                borderBottom: '1px solid rgba(255,255,255,0.04)',
+                background: isMe ? 'rgba(247,147,26,0.04)' : 'transparent',
+                alignItems: 'center',
+              }}>
+                <div style={{ fontSize: i < 3 ? 18 : 13, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', fontWeight: 700 }}>{rankEmoji}</div>
+                <div>
+                  <div className="font-mono" style={{ fontSize: 12, color: isMe ? '#f7931a' : '#00d4ff', marginBottom: 2 }}>
+                    {formatAddress(entry.address)} {isMe && <span style={{ fontSize: 10, color: '#f7931a' }}>← you</span>}
                   </div>
-                </td>
-                <td style={{ padding: '16px', fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 15 }}>{w.stats.dealsCompleted}</td>
-                <td style={{ padding: '16px', fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#f7931a' }}>{formatSats(w.stats.totalReceived)}</td>
-                <td style={{ padding: '16px' }}>
-                  <span className={w.stats.disputes === 0 ? 'badge-green' : 'badge-red'}>{w.stats.disputes}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  <div className="font-mono" style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>{entry.address.slice(0, 20)}...</div>
+                </div>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color, padding: '3px 10px', borderRadius: 20, background: `${color}15`, border: `1px solid ${color}30` }}>
+                    {level}
+                  </span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span className="font-display font-bold" style={{ fontSize: 18, color: entry.score > 0 ? color : 'rgba(255,255,255,0.2)' }}>
+                    {entry.score}
+                  </span>
+                </div>
+                <div>
+                  <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(entry.score / 1000) * 100}%`, background: `linear-gradient(90deg, #f7931a, #00d4ff)`, borderRadius: 2, transition: 'width 0.8s ease' }} />
+                  </div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace', marginTop: 4, textAlign: 'right' }}>{entry.score}/1000</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-      <div style={{ marginTop: 20, padding: '14px 20px', borderRadius: 12, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.15)', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: 'rgba(0,212,255,0.7)' }}>
-        📡 Live data from ReputationRegistry on Bitcoin L1 via OP_NET · Demo mode active
+      {/* Footer note */}
+      <div style={{ marginTop: 20, textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace' }}>
+        📡 Live data from ReputationRegistry on Bitcoin L1 via OP_NET
+        <span style={{ marginLeft: 8, color: '#f7931a' }}>· Testnet</span>
       </div>
     </div>
   );
