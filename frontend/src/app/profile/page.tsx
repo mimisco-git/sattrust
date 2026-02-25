@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useState } from 'react';
 import { computeSatScore, DEMO_WALLETS, formatSats, formatAddress, LEVEL_COLORS, LEVEL_ICONS, type WalletStats } from '../../lib/sattrust';
 

@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { DEMO_WALLETS, computeSatScore, formatSats, formatAddress, LEVEL_COLORS, LEVEL_ICONS } from '../../lib/sattrust';
 
 export default function LeaderboardPage() {
