@@ -93,7 +93,7 @@ export const DEAL_STATUS = ['Pending', 'Released', 'Disputed', 'Refunded'] as co
 export type DealStatus = typeof DEAL_STATUS[number];
 
 export function formatSats(sats: bigint): string {
-  if (sats >= 100_000_000n) {
+  if (sats >= BigInt(100000000)) {
     return `${(Number(sats) / 100_000_000).toFixed(4)} BTC`;
   }
   return `${sats.toLocaleString()} sats`;
