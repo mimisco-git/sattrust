@@ -1,0 +1,79 @@
+{
+    "functions": [
+        {
+            "name": "createDeal",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "deadline",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "description",
+                    "type": "STRING"
+                },
+                {
+                    "name": "recipients",
+                    "type": "STRING"
+                },
+                {
+                    "name": "percentages",
+                    "type": "STRING"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "dealId",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getDealCount",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "count",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getRegistry",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "registry",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "setRegistry",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "registry",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ],
+    "events": []
+}

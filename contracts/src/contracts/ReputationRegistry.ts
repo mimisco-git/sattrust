@@ -96,7 +96,7 @@ export class ReputationRegistry extends OP_NET {
         const _ = ownerStorage;
     }
 
-    public override callMethod(calldata: Calldata): BytesWriter {
+    public callMethod(calldata: Calldata): BytesWriter {
         const selector: Selector = calldata.readSelector();
 
         switch (selector) {
@@ -131,8 +131,8 @@ export class ReputationRegistry extends OP_NET {
      */
     @method(
         { name: 'payer', type: ABIDataTypes.ADDRESS },
-        { name: 'recipients', type: ABIDataTypes.ADDRESS_ARRAY },
-        { name: 'amounts', type: ABIDataTypes.UINT256_ARRAY },
+        { name: 'recipients', type: ABIDataTypes.STRING },
+        { name: 'amounts', type: ABIDataTypes.STRING },
         { name: 'wasLate', type: ABIDataTypes.BOOL },
         { name: 'wasDisputed', type: ABIDataTypes.BOOL }
     )

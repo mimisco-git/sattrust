@@ -43,7 +43,7 @@ export class DealFactory extends OP_NET {
         const _ = registry;
     }
 
-    public override callMethod(calldata: Calldata): BytesWriter {
+    public callMethod(calldata: Calldata): BytesWriter {
         const selector: Selector = calldata.readSelector();
 
         switch (selector) {
@@ -70,8 +70,8 @@ export class DealFactory extends OP_NET {
     @method(
         { name: 'deadline', type: ABIDataTypes.UINT64 },
         { name: 'description', type: ABIDataTypes.STRING },
-        { name: 'recipients', type: ABIDataTypes.ADDRESS_ARRAY },
-        { name: 'percentages', type: ABIDataTypes.UINT32_ARRAY }
+        { name: 'recipients', type: ABIDataTypes.STRING },
+        { name: 'percentages', type: ABIDataTypes.STRING }
     )
     @returns({ name: 'dealId', type: ABIDataTypes.UINT256 })
     public createDeal(calldata: Calldata): BytesWriter {

@@ -1,0 +1,98 @@
+{
+    "functions": [
+        {
+            "name": "releaseFunds",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "refund",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "raiseDispute",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getDeal",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "dealId",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "totalAmount",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "status",
+                    "type": "UINT8"
+                },
+                {
+                    "name": "deadline",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "createdAt",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "recipientCount",
+                    "type": "UINT32"
+                },
+                {
+                    "name": "wasLate",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "description",
+                    "type": "STRING"
+                }
+            ]
+        },
+        {
+            "name": "getStatus",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "status",
+                    "type": "UINT8"
+                }
+            ]
+        }
+    ],
+    "events": []
+}

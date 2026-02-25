@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "release": {
+      "outFile": "build/contract.wasm",
+      "textFile": "build/contract.wat",
+      "sourceMap": false,
+      "optimize": true,
+      "optimizeLevel": 3,
+      "shrinkLevel": 2
+    }
+  },
+  "options": {
+    "transform": "@btc-vision/opnet-transform",
+    "lib": "node_modules/@btc-vision/btc-runtime/runtime"
+  }
+}

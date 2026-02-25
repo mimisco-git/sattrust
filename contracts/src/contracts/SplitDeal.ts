@@ -141,7 +141,7 @@ export class SplitDeal extends OP_NET {
         );
     }
 
-    public override callMethod(calldata: Calldata): BytesWriter {
+    public callMethod(calldata: Calldata): BytesWriter {
         const selector: Selector = calldata.readSelector();
 
         switch (selector) {

@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@btc-vision/transaction": "^1.7.31",
     "autoprefixer": "^10.4.24",
     "lucide-react": "^0.263.1",
     "next": "^16.1.6",

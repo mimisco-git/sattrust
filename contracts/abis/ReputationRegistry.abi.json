@@ -1,0 +1,182 @@
+{
+    "functions": [
+        {
+            "name": "recordCompletion",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "payer",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "recipients",
+                    "type": "STRING"
+                },
+                {
+                    "name": "amounts",
+                    "type": "STRING"
+                },
+                {
+                    "name": "wasLate",
+                    "type": "BOOL"
+                },
+                {
+                    "name": "wasDisputed",
+                    "type": "BOOL"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "recordDispute",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "payer",
+                    "type": "ADDRESS"
+                },
+                {
+                    "name": "recipient",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getReputation",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "wallet",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "dealsCompleted",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "dealsAsPayer",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "totalReceived",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "totalPaid",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "disputes",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "lateReleases",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "uniquePayers",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "firstActivity",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "lastActivity",
+                    "type": "UINT64"
+                },
+                {
+                    "name": "score",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getScore",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "wallet",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "score",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getTotalWallets",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "count",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "allowlistFactory",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "factory",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "isAllowlisted",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "factory",
+                    "type": "ADDRESS"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "result",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ],
+    "events": []
+}
